@@ -1,6 +1,6 @@
 {
   "name": "pi-zed-terminal-title",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Pi extension for Zed Terminal Threads: AI-generated terminal titles, status icons, and bell notifications.",
   "keywords": [
     "pi-package",
@@ -18,5 +18,9 @@
   "peerDependencies": {
     "@earendil-works/pi-ai": "*",
     "@earendil-works/pi-coding-agent": "*"
+  },
+  "devDependencies": {
+    "@earendil-works/pi-coding-agent": "^0.82.1",
+    "typescript": "^7.0.2"
   }
 }

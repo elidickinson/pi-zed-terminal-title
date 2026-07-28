@@ -199,6 +199,16 @@ async function generateTaskTitle(
 }
 
 export default function (pi: ExtensionAPI) {
+	// Guard: only run in the interactive TUI. In-process subagent sessions
+	// (e.g. pi-subagents) bind extensions without a mode/uiContext, leaving
+	// ctx.mode as "print". Without this guard, a subagent's session_start and
+	// before_agent_start events would clobber the parent's module state,
+	// rewrite the shared terminal title, and even persist a session name into
+	// the parent's session file.
+	function isInteractive(ctx: { mode?: string }): boolean {
+		return ctx.mode === "tui";
+	}
+
 	function restoreTitle(ctx: { sessionManager: { getEntries(): unknown[]; getBranch(): unknown[] } }) {
 		const sessionName = pi.getSessionName();
 		hadSessionNameAtStart = Boolean(sessionName?.trim());
@@ -235,6 +245,7 @@ export default function (pi: ExtensionAPI) {
 	}
 
 	pi.on("session_start", (_event, ctx) => {
+		if (!isInteractive(ctx)) return;
 		configuredTitleModel = readTitleModelSetting();
 		currentStatus = "idle";
 		titleGenerationId++;
@@ -256,6 +267,7 @@ export default function (pi: ExtensionAPI) {
 	});
 
 	pi.on("before_agent_start", async (event, ctx) => {
+		if (!isInteractive(ctx)) return;
 		currentStatus = "working";
 
 		if (titleResolved) {
@@ -269,13 +281,15 @@ export default function (pi: ExtensionAPI) {
 		generateAndPersistTitle(event.prompt, ctx);
 	});
 
-	pi.on("agent_end", () => {
+	pi.on("agent_end", (_event, ctx) => {
+		if (!isInteractive(ctx)) return;
 		currentStatus = "idle";
 		writeTerminalTitle(statusTitle(currentStatus));
 		notifyTerminal();
 	});
 
-	pi.on("session_shutdown", () => {
+	pi.on("session_shutdown", (_event, ctx) => {
+		if (!isInteractive(ctx)) return;
 		taskTitle = DEFAULT_TITLE;
 		titleResolved = false;
 		configuredTitleModel = undefined;
