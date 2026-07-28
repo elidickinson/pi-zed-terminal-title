@@ -234,7 +234,10 @@ export default function (pi: ExtensionAPI) {
 				taskTitle = aiTitle;
 				titleResolved = true;
 				pi.appendEntry(TITLE_ENTRY_TYPE, { title: aiTitle });
-				if (!hadSessionNameAtStart) {
+				// Name the session from the AI title, but never clobber a name the
+				// user has set (e.g. via /name) — check live, since the name may
+				// have been set after session start while generation was in flight.
+				if (!hadSessionNameAtStart && !pi.getSessionName()?.trim()) {
 					pi.setSessionName(aiTitle);
 				}
 				writeTerminalTitle(statusTitle(currentStatus));
