@@ -90,8 +90,7 @@ function parseConfiguredTitleModel(modelRegistry: { find(provider: string, id: s
 }
 
 function statusTitle(status: "idle" | "working") {
-	const icon = status === "working" ? "⏳️" : "✅";
-	return `${icon} ${taskTitle}`;
+	return status === "working" ? `⏳️ ${taskTitle}` : taskTitle;
 }
 
 function textFromContent(content: unknown): string | undefined {

@@ -5,9 +5,7 @@ Pi extension for Zed Terminal Threads.
 Features:
 
 - Sets Zed terminal title while Pi works/idles
-- Uses icons only for status:
-  - `⏳️ <title>` while working
-  - `✅ <title>` when idle
+- `⏳️ <title>` while working, plain `<title>` when idle
 - Generates a short AI title from the first user prompt
 - Persists/restores the title across `/resume`
 - Emits terminal bell on agent completion for Zed notifications
